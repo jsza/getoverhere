@@ -4,7 +4,9 @@ from downloader import Downloader
 
 
 parser = ArgumentParser()
-parser.add_argument('deployments', nargs='*', help='Deployments.')
+parser.add_argument('-d', '--deployments', nargs='*', help='Deployments.')
+parser.add_argument('-p', '--path',
+                    help='Target path on disk.')
 parser.add_argument('-fi', '--full-install',
                     help='Download and overwrite all files.',
                     action='store_true')
@@ -13,12 +15,13 @@ parser.add_argument('-sc', '--skip-confirm',
                     action='store_true')
 parser.add_argument('-fu', '--force-update',
                     help='Force install if already up-to-date. '
-                         'This should not be needed unless something went horrible wrong.',
+                         'This should not be needed unless something went horribly wrong.',
                     action='store_true')
 args = parser.parse_args()
+basePath = args.path
 fullInstall = args.full_install
 skipConfirm = args.skip_confirm
 forceUpdate = args.force_update
 
 for deployment in args.deployments:
-    Downloader(deployment, fullInstall, skipConfirm, forceUpdate).download()
+    Downloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate).download()

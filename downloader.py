@@ -14,7 +14,8 @@ from zipfile import ZipFile
 
 
 class Downloader(object):
-    def __init__(self, deployment, fullInstall, skipConfirm, forceUpdate):
+    def __init__(self, deployment, basePath, fullInstall, skipConfirm, forceUpdate):
+        self.basePath = basePath
         self.deployment = deployment
         self.fullInstall = fullInstall
         self.skipConfirm = skipConfirm
@@ -51,8 +52,6 @@ class Downloader(object):
 
     def _loadSettings(self):
         settings = getSettings()
-        self.basePath = settings['basePath']
-
         ours = settings[self.deployment]
         self.targetVersion = ours['version']
         self.filePrefix = ours['filePrefix']

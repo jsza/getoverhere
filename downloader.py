@@ -14,10 +14,11 @@ from zipfile import ZipFile
 
 
 class Downloader(object):
-    def __init__(self, deployment, fullInstall, skipConfirm):
+    def __init__(self, deployment, fullInstall, skipConfirm, forceUpdate):
         self.deployment = deployment
         self.fullInstall = fullInstall
         self.skipConfirm = skipConfirm
+        self.forceUpdate = forceUpdate
         self._loadSettings()
         self.currentVersion = getVersion(deployment)
 
@@ -29,9 +30,10 @@ class Downloader(object):
 
         fn = self._findLatestFile()
 
-        if fn == self.currentVersion:
-            self._print('Already up to date.')
-            return
+        if not self.forceUpdate:
+            if fn == self.currentVersion:
+                self._print('Already up to date.')
+                return
 
         if not self.skipConfirm:
             if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):

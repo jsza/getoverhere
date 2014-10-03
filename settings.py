@@ -3,7 +3,7 @@ import json
 
 
 
-def getSettings(deployment):
+def getSettings():
     path = os.path.join(os.getcwd(), 'settings.cfg')
     if not os.path.exists(path):
         settings = {
@@ -46,4 +46,4 @@ def getSettings(deployment):
     else:
         with open(path) as f:
             settings = json.load(f)
-    return settings[deployment]
+    return settings

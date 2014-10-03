@@ -20,11 +20,18 @@ class Downloader(object):
         self.skipConfirm = skipConfirm
         self._loadSettings()
         self.currentVersion = getVersion(deployment)
-        self.basePath = os.getcwd()
 
 
     def download(self):
+        if self.basePath is None:
+            self._print('Base path not set in settings.cfg')
+            return
+
         fn = self._findLatestFile()
+
+        if fn == self.currentVersion:
+            self._print('Already up to date.')
+            return
 
         if not self.skipConfirm:
             if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
@@ -41,13 +48,16 @@ class Downloader(object):
 
 
     def _loadSettings(self):
-        settings = getSettings(self.deployment)
-        self.targetVersion = settings['version']
-        self.filePrefix = settings['filePrefix']
+        settings = getSettings()
+        self.basePath = settings['basePath']
+
+        ours = settings[self.deployment]
+        self.targetVersion = ours['version']
+        self.filePrefix = ours['filePrefix']
         self.baseURL = '%s%s/' % (
-            settings['baseURL'], self.targetVersion)
-        self.updateFolders = settings['updateFolders']
-        self.onlyUpdateExisting = settings['onlyUpdateExisting']
+            ours['baseURL'], self.targetVersion)
+        self.updateFolders = ours['updateFolders']
+        self.onlyUpdateExisting = ours['onlyUpdateExisting']
 
 
     def _findLatestFile(self):

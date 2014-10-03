@@ -89,13 +89,6 @@ class Downloader(object):
         print('[%s] %s' % (self.deployment, s))
 
 
-    def _extract(self, f, format):
-        if format == 'tar':
-            self._extractTar(f)
-        elif format == 'zip':
-            self._extractZip(f)
-
-
     def _extractTar(self, f):
         with tarfile.open(fileobj=f) as tf:
             for member in tf.getmembers():

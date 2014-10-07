@@ -9,6 +9,7 @@ def getSettings():
         settings = {
             'basePath': None,
             'sourcemod': {
+                'scheme': 'alliedmodders',
                 'baseURL': 'http://www.sourcemod.net/smdrop/',
                 'version': '1.6',
                 'filePrefix': 'sourcemod',
@@ -23,6 +24,7 @@ def getSettings():
                 ]
             },
             'metamod': {
+                'scheme': 'alliedmodders',
                 'baseURL': 'http://www.metamodsource.net/mmsdrop/',
                 'version': '1.10',
                 'filePrefix': 'mmsource',
@@ -32,12 +34,20 @@ def getSettings():
                 'onlyUpdateExisting': []
             },
             'stripper': {
+                'scheme': 'alliedmodders',
                 'baseURL': 'http://www.bailopan.net/stripper/snapshots/',
                 'version': '1.2',
                 'filePrefix': 'stripper',
                 'updateFolders': [
                     'addons/stripper/bin'
                 ],
+                'onlyUpdateExisting': []
+            },
+            'tf2items': {
+                'scheme': 'generic',
+                'URL': 'http://hg.limetech.org/projects/tf2items/tf2items_release/archive/tip.zip',
+                'basePath': 'addons/sourcemod/',
+                'updateFolders': [],
                 'onlyUpdateExisting': []
             }
         }

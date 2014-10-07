@@ -29,30 +29,34 @@ class Downloader(object):
             self._print('Base path not set in settings.cfg')
             return
 
-        fn = self._findLatestFile()
-
-        if not self.forceUpdate:
-            if fn == self.currentVersion:
-                self._print('Already up to date.')
-                return
-
-        if not self.skipConfirm:
-            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
-                return
-
-        data = self._downloadFile(fn)
+        if self.scheme == 'alliedmodders':
+            fn = self._findLatestFile()
+            if not self.forceUpdate:
+                if fn == self.currentVersion:
+                    self._print('Already up to date.')
+                    return
+            if not self.skipConfirm:
+                if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
+                    return
+            url = '%s%s' % (self.baseURL, fn)
+            data = self._download(url)
+        else:
+            url = self.targetURL
+            data = self._download(self.targetURL)
 
         if fn.endswith('.tar.gz'):
             self._extractTar(data)
         elif fn.endswith('.zip'):
             self._extractZip(data)
 
-        changeVersion(self.deployment, fn)
+        if self.scheme == 'alliedmodders':
+            changeVersion(self.deployment, fn)
 
 
     def _loadSettings(self):
         settings = getSettings()
         ours = settings[self.deployment]
+        self.scheme = ours['scheme']
         self.targetVersion = ours['version']
         self.filePrefix = ours['filePrefix']
         self.baseURL = '%s%s/' % (
@@ -75,13 +79,15 @@ class Downloader(object):
             self._print('ERROR: No matching version found for your OS.')
 
 
-    def _downloadFile(self, filename):
-        url = '%s%s' % (self.baseURL, filename)
-
+    def _download(self, url):
         self._print('Fetching %s' % (url,))
-
         r = requests.get(url)
         return StringIO(r.content)
+
+
+    def _downloadFile(self, filename):
+        url = '%s%s' % (self.baseURL, filename)
+        return self._download(url)
 
 
     def _print(self, s):

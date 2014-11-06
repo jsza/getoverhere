@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+ #!/usr/bin/python
 
 from argparse import ArgumentParser
 from getoverhere.downloader import Downloader

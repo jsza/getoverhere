@@ -34,15 +34,6 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
         return None
 
 
-    self.scheme = ours['scheme']
-    self.targetVersion = ours['version']
-    self.filePrefix = ours['filePrefix']
-    self.baseURL = '%s%s/' % (
-        ours['baseURL'], self.targetVersion)
-    self.updateFolders = ours['updateFolders']
-    self.onlyUpdateExisting = ours['onlyUpdateExisting']
-
-
 
 class Downloader(object):
     def __init__(self, settings, basePath, fullInstall, skipConfirm,

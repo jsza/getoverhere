@@ -1,14 +1,9 @@
 import os
 import json
 
-from platform import system
 
 
-
-if system() == 'Linux':
-    configPath = os.path.join('~', '.config', 'getoverhere')
-else:
-    configPath = os.getcwd()
+configPath = os.path.join(os.path.expanduser('~'), '.config', 'getoverhere')
 
 if not os.path.exists(configPath):
     os.makedirs(configPath)

@@ -1,15 +1,14 @@
 import os
-import sys
 import requests
 import platform
 import tarfile
 
 from StringIO import StringIO
 from bs4 import BeautifulSoup
-from settings import getSettings
-from versions import getVersion, changeVersion
 from utils import query_yes_no
 from zipfile import ZipFile
+
+from getoverhere.config import getVersion, changeVersion, getSettings
 
 
 

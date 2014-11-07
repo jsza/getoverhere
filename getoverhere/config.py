@@ -1,11 +1,50 @@
 import os
 import json
 
+from platform import system
+
+
+
+if system() == 'linux':
+    configPath = os.path.join('~', '.config', 'getoverhere')
+else:
+    configPath = os.getcwd()
+
+
+
+def getVersion(deployment):
+    path = os.path.join(configPath, 'versions.cfg')
+    if not os.path.exists(path):
+        versions = {
+            'metamod': None,
+            'sourcemod': None,
+            'stripper': None
+        }
+        with open(path, 'wb') as f:
+            json.dump(versions, f)
+    else:
+        with open(path) as f:
+            versions = json.load(f)
+    return versions[deployment]
+
+
+
+def changeVersion(deployment, value):
+    path = os.path.join(configPath, 'versions.cfg')
+
+    with open(path) as f:
+        versions = json.load(f)
+
+    versions[deployment] = value
+    with open(path, 'w') as f:
+        json.dump(versions, f)
+
 
 
 def getSettings():
-    path = os.path.join(os.getcwd(), 'settings.cfg')
+    path = os.path.join(configPath, 'settings.cfg')
     if not os.path.exists(path):
+        os.path.makedirs(path)
         settings = {
             'basePath': None,
             'sourcemod': {

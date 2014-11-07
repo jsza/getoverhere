@@ -83,7 +83,7 @@ class Downloader(object):
             self._print(s)
 
 
-    def _extractTar(self, f):
+    def _extractTar(self, f, basePath=None):
         with tarfile.open(fileobj=f) as tf:
             for member in tf.getmembers():
                 filename = member.name
@@ -92,10 +92,15 @@ class Downloader(object):
                     continue
 
                 self._printVerbose('(Extract) %s' % (filename,))
-                tf.extract(member, self.basePath)
+
+                if basePath is not None:
+                    path = os.path.join(self.basePath, basePath)
+                else:
+                    path = basePath
+                tf.extract(member, path)
 
 
-    def _extractZip(self, f):
+    def _extractZip(self, f, basePath=None):
         with ZipFile(f) as zf:
             for member in zf.infolist():
                 filename = member.filename
@@ -104,7 +109,12 @@ class Downloader(object):
                     continue
 
                 self._printVerbose('(Extract) %s' % (filename,))
-                zf.extract(member, self.basePath)
+
+                if basePath is not None:
+                    path = os.path.join(self.basePath, basePath)
+                else:
+                    path = basePath
+                zf.extract(member, path)
 
 
 
@@ -177,6 +187,6 @@ class GenericDownloader(Downloader):
         data = self._download(self.settings['targetURL'])
 
         if url.endswith('.tar.gz'):
-            self._extractTar(data)
+            self._extractTar(data, self.settings['basePath'])
         elif url.endswith('.zip'):
-            self._extractZip(data)
+            self._extractZip(data, self.settings['basePath'])

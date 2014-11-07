@@ -12,46 +12,48 @@ from getoverhere.config import getVersion, changeVersion, getSettings
 
 
 
+def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
+                  verbose):
+    settings = getSettings()
+
+    try:
+        ours = settings[deployment]
+    except KeyError:
+        print('[%s] \'%s\' is not a supported deployment.' % (deployment, deployment))
+        return None
+
+    scheme = ours['scheme']
+    if scheme == 'alliedmodders':
+        return AlliedModdersDownloader(ours, basePath, fullInstall,
+                                       skipConfirm, forceUpdate, verbose)
+    elif scheme == 'generic':
+        return GenericDownloader(ours, basePath, fullInstall, skipConfirm,
+                                 forceUpdate, verbose)
+    else:
+        print('[%s] \'%s\' scheme is not supported.' % (deployment, scheme))
+        return None
+
+
+    self.scheme = ours['scheme']
+    self.targetVersion = ours['version']
+    self.filePrefix = ours['filePrefix']
+    self.baseURL = '%s%s/' % (
+        ours['baseURL'], self.targetVersion)
+    self.updateFolders = ours['updateFolders']
+    self.onlyUpdateExisting = ours['onlyUpdateExisting']
+
+
+
 class Downloader(object):
-    def __init__(self, deployment, basePath, fullInstall, skipConfirm,
+    def __init__(self, settings, basePath, fullInstall, skipConfirm,
                  forceUpdate, verbose):
+        self.deployment = settings['deployment']
         self.basePath = basePath
-        self.deployment = deployment
+        self.settings = settings
         self.fullInstall = fullInstall
         self.skipConfirm = skipConfirm
         self.forceUpdate = forceUpdate
         self.verbose = verbose
-        self._loadSettings()
-        self.currentVersion = getVersion(deployment)
-
-
-    def download(self):
-        if self.basePath is None:
-            self._print('Base path not set in settings.cfg')
-            return
-
-        if self.scheme == 'alliedmodders':
-            fn = self._findLatestFile()
-            if not self.forceUpdate:
-                if fn == self.currentVersion:
-                    self._print('Already up to date.')
-                    return
-            if not self.skipConfirm:
-                if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
-                    return
-            url = '%s%s' % (self.baseURL, fn)
-            data = self._download(url)
-        else:
-            url = self.targetURL
-            data = self._download(self.targetURL)
-
-        if fn.endswith('.tar.gz'):
-            self._extractTar(data)
-        elif fn.endswith('.zip'):
-            self._extractZip(data)
-
-        if self.scheme == 'alliedmodders':
-            changeVersion(self.deployment, fn)
 
 
     def _loadSettings(self):
@@ -66,29 +68,10 @@ class Downloader(object):
         self.onlyUpdateExisting = ours['onlyUpdateExisting']
 
 
-    def _findLatestFile(self):
-        r = requests.get(self.baseURL)
-        soup = BeautifulSoup(r.text)
-
-        for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: x.get('href')):
-            href = link.get('href')
-            if not href.startswith('%s-%s' % (self.filePrefix, self.targetVersion)):
-                continue
-            if platform.system().lower() in href:
-                return href
-        else:
-            self._print('ERROR: No matching version found for your OS.')
-
-
     def _download(self, url):
         self._print('Fetching %s' % (url,))
         r = requests.get(url)
         return StringIO(r.content)
-
-
-    def _downloadFile(self, filename):
-        url = '%s%s' % (self.baseURL, filename)
-        return self._download(url)
 
 
     def _print(self, s):
@@ -124,19 +107,76 @@ class Downloader(object):
                 zf.extract(member, self.basePath)
 
 
+
+class AlliedModdersDownloader(Downloader):
+    def download(self):
+        if self.basePath is None:
+            self._print('Base path not set in settings.cfg')
+            return
+
+        fn = self._findLatestFile()
+        if not self.forceUpdate:
+            if fn == getVersion(self.deployment):
+                self._print('Already up to date.')
+                return
+        if not self.skipConfirm:
+            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
+                return
+        url = '%s%s' % (self.settings['baseURL'], fn)
+        data = self._download(url)
+
+        if fn.endswith('.tar.gz'):
+            self._extractTar(data)
+        elif fn.endswith('.zip'):
+            self._extractZip(data)
+
+        changeVersion(self.deployment, fn)
+
+
+    def _findLatestFile(self):
+        r = requests.get(self.baseURL)
+        soup = BeautifulSoup(r.text)
+
+        for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: x.get('href')):
+            href = link.get('href')
+            if not href.startswith('%s-%s' % (self.settings['filePrefix'],
+                                              self.settings['targetVersion'])):
+                continue
+            if platform.system().lower() in href:
+                return href
+        else:
+            self._print('ERROR: No matching version found for your OS.')
+
+
     def _checkUpdatable(self, filename):
         if not self.fullInstall:
-            for fn in self.updateFolders:
+            for fn in self.settings['updateFolders']:
                 if filename.startswith(fn):
                     break
             else:
                 return False
 
-            for fn in self.onlyUpdateExisting:
+            for fn in self.settings['onlyUpdateExisting']:
                 if filename.startswith(fn):
                     if not os.path.exists(
-                        os.path.join(self.basePath, filename)):
+                        os.path.join(self.settings['basePath'], filename)):
                         self._printVerbose('(Skip) %s' % (filename,))
                         return False
 
         return True
+
+
+
+class GenericDownloader(Downloader):
+    def download(self):
+        if self.basePath is None:
+            self._print('Base path not set in settings.cfg')
+            return
+
+        url = self.targetURL
+        data = self._download(self.settings['targetURL'])
+
+        if url.endswith('.tar.gz'):
+            self._extractTar(data)
+        elif url.endswith('.zip'):
+            self._extractZip(data)

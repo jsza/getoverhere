@@ -5,7 +5,7 @@ from platform import system
 
 
 
-if system() == 'linux':
+if system() == 'Linux':
     configPath = os.path.join('~', '.config', 'getoverhere')
 else:
     configPath = os.getcwd()

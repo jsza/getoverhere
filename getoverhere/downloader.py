@@ -24,7 +24,7 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
 
     scheme = ours['scheme']
     if scheme == 'alliedmodders':
-        return AlliedModdersDownloader(ours, basePath, fullInstall,
+        return AlliedModdersDownloader(deployment, ours, basePath, fullInstall,
                                        skipConfirm, forceUpdate, verbose)
     elif scheme == 'generic':
         return GenericDownloader(ours, basePath, fullInstall, skipConfirm,
@@ -36,9 +36,9 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
 
 
 class Downloader(object):
-    def __init__(self, settings, basePath, fullInstall, skipConfirm,
-                 forceUpdate, verbose):
-        self.deployment = settings['deployment']
+    def __init__(self, deployment, settings, basePath, fullInstall,
+                 skipConfirm, forceUpdate, verbose):
+        self.deployment = deployment
         self.basePath = basePath
         self.settings = settings
         self.fullInstall = fullInstall

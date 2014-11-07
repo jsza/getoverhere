@@ -13,12 +13,14 @@ from getoverhere.config import getVersion, changeVersion, getSettings
 
 
 class Downloader(object):
-    def __init__(self, deployment, basePath, fullInstall, skipConfirm, forceUpdate):
+    def __init__(self, deployment, basePath, fullInstall, skipConfirm,
+                 forceUpdate, verbose):
         self.basePath = basePath
         self.deployment = deployment
         self.fullInstall = fullInstall
         self.skipConfirm = skipConfirm
         self.forceUpdate = forceUpdate
+        self.verbose = verbose
         self._loadSettings()
         self.currentVersion = getVersion(deployment)
 
@@ -93,6 +95,11 @@ class Downloader(object):
         print('[%s] %s' % (self.deployment, s))
 
 
+    def _printVerbose(self, s):
+        if self.verbose:
+            self._print(s)
+
+
     def _extractTar(self, f):
         with tarfile.open(fileobj=f) as tf:
             for member in tf.getmembers():
@@ -101,7 +108,7 @@ class Downloader(object):
                 if not self._checkUpdatable(filename):
                     continue
 
-                self._print('(Extract) %s' % (filename,))
+                self._printVerbose('(Extract) %s' % (filename,))
                 tf.extract(member, self.basePath)
 
 
@@ -113,7 +120,7 @@ class Downloader(object):
                 if not self._checkUpdatable(filename):
                     continue
 
-                self._print('(Extract) %s' % (filename,))
+                self._printVerbose('(Extract) %s' % (filename,))
                 zf.extract(member, self.basePath)
 
 
@@ -129,7 +136,7 @@ class Downloader(object):
                 if filename.startswith(fn):
                     if not os.path.exists(
                         os.path.join(self.basePath, filename)):
-                        self._print('(Skip) %s' % (filename,))
+                        self._printVerbose('(Skip) %s' % (filename,))
                         return False
 
         return True

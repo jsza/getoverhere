@@ -20,14 +20,19 @@ def main():
                         help='Force install if already up-to-date. '
                              'This should not be needed unless something went horribly wrong.',
                         action='store_true')
+    parser.add_argument('-v', '--verbose',
+                        help='Output all status messages.',
+                        action='store_true')
     args = parser.parse_args()
     basePath = args.path
     fullInstall = args.full_install
     skipConfirm = args.skip_confirm
     forceUpdate = args.force_update
+    verbose = args.verbose
 
     for deployment in args.deployments:
-        Downloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate).download()
+        Downloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
+                   verbose).download()
 
 
 

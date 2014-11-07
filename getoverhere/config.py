@@ -10,12 +10,14 @@ if system() == 'linux':
 else:
     configPath = os.getcwd()
 
+if not os.path.exists(configPath):
+    os.makedirs(configPath)
+
 
 
 def getVersion(deployment):
     path = os.path.join(configPath, 'versions.cfg')
     if not os.path.exists(path):
-        os.makedirs(path)
         versions = {
             'metamod': None,
             'sourcemod': None,
@@ -45,7 +47,6 @@ def changeVersion(deployment, value):
 def getSettings():
     path = os.path.join(configPath, 'settings.cfg')
     if not os.path.exists(path):
-        os.makedirs(path)
         settings = {
             'basePath': None,
             'sourcemod': {

@@ -1,15 +1,16 @@
+from __future__ import division
+
 import os
-import requests
 import platform
 import tarfile
-
 from StringIO import StringIO
-from bs4 import BeautifulSoup
-from utils import query_yes_no
 from zipfile import ZipFile
 
-from getoverhere.config import getVersion, changeVersion, getSettings
+import requests
+from bs4 import BeautifulSoup
 
+from getoverhere.config import changeVersion, getSettings, getVersion
+from getoverhere.utils import query_yes_no, splitPath
 
 
 def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
@@ -27,8 +28,8 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
         return AlliedModdersDownloader(deployment, ours, basePath, fullInstall,
                                        skipConfirm, forceUpdate, verbose)
     elif scheme == 'generic':
-        return GenericDownloader(ours, basePath, fullInstall, skipConfirm,
-                                 forceUpdate, verbose)
+        return GenericDownloader(deployment, ours, basePath, fullInstall,
+                                 skipConfirm, forceUpdate, verbose)
     else:
         print('[%s] \'%s\' scheme is not supported.' % (deployment, scheme))
         return None
@@ -47,18 +48,6 @@ class Downloader(object):
         self.verbose = verbose
 
 
-    def _loadSettings(self):
-        settings = getSettings()
-        ours = settings[self.deployment]
-        self.scheme = ours['scheme']
-        self.targetVersion = ours['version']
-        self.filePrefix = ours['filePrefix']
-        self.baseURL = '%s%s/' % (
-            ours['baseURL'], self.targetVersion)
-        self.updateFolders = ours['updateFolders']
-        self.onlyUpdateExisting = ours['onlyUpdateExisting']
-
-
     def _download(self, url):
         self._print('Fetching %s' % (url,))
         r = requests.get(url)
@@ -74,79 +63,43 @@ class Downloader(object):
             self._print(s)
 
 
-    def _extractTar(self, f, basePath=None):
+    def _extractTar(self, f, basePath=None, depth=0):
         with tarfile.open(fileobj=f) as tf:
             for member in tf.getmembers():
-                filename = member.name
+                if depth > 0:
+                    member.name = os.path.join(
+                        *splitPath(member.name)[depth:])
 
-                if not self._checkUpdatable(filename):
-                    continue
-
-                self._printVerbose('(Extract) %s' % (filename,))
-
-                if basePath is not None:
-                    path = os.path.join(self.basePath, basePath)
-                else:
-                    path = basePath
-                tf.extract(member, path)
+                self._extract(tf, member, member.name, basePath)
 
 
-    def _extractZip(self, f, basePath=None):
+    def _extractZip(self, f, basePath=None, depth=0):
         with ZipFile(f) as zf:
             for member in zf.infolist():
-                filename = member.filename
+                if depth > 0:
+                    member.filename = os.path.join(
+                        *splitPath(member.filename)[depth:])
 
-                if not self._checkUpdatable(filename):
-                    continue
-
-                self._printVerbose('(Extract) %s' % (filename,))
-
-                if basePath is not None:
-                    path = os.path.join(self.basePath, basePath)
-                else:
-                    path = basePath
-                zf.extract(member, path)
+                self._extract(zf, member, member.filename, basePath)
 
 
-
-class AlliedModdersDownloader(Downloader):
-    def download(self):
-        if self.basePath is None:
-            self._print('Base path not set in settings.cfg')
+    def _extract(self, zf, member, filename, basePath):
+        if filename in self.settings.get('ignoreFiles', []):
+            self._printVerbose('(Ignore) %s' % filename)
             return
 
-        fn = self._findLatestFile()
-        if not self.forceUpdate:
-            if fn == getVersion(self.deployment):
-                self._print('Already up to date.')
-                return
-        if not self.skipConfirm:
-            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
-                return
-        url = '%s%s' % (self.settings['baseURL'], fn)
-        data = self._download(url)
+        if not self._checkUpdatable(filename):
+            self._printVerbose('(Skip) %s' % filename)
+            return
 
-        if fn.endswith('.tar.gz'):
-            self._extractTar(data)
-        elif fn.endswith('.zip'):
-            self._extractZip(data)
+        self._printVerbose('(Extract) %s' % (filename,))
 
-        changeVersion(self.deployment, fn)
-
-
-    def _findLatestFile(self):
-        r = requests.get(self.baseURL)
-        soup = BeautifulSoup(r.text)
-
-        for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: x.get('href')):
-            href = link.get('href')
-            if not href.startswith('%s-%s' % (self.settings['filePrefix'],
-                                              self.settings['targetVersion'])):
-                continue
-            if platform.system().lower() in href:
-                return href
+        if basePath is not None:
+            path = os.path.join(self.basePath, basePath)
         else:
-            self._print('ERROR: No matching version found for your OS.')
+            path = basePath
+
+        zf.extract(member, path)
 
 
     def _checkUpdatable(self, filename):
@@ -168,16 +121,71 @@ class AlliedModdersDownloader(Downloader):
 
 
 
+class AlliedModdersDownloader(Downloader):
+    def download(self):
+        if self.basePath is None:
+            self._print('Base path not set in settings.cfg')
+            return
+
+        fn = self._findLatestFile()
+        if fn is None:
+            return
+
+        if not self.forceUpdate:
+            if fn == getVersion(self.basePath, self.deployment):
+                self._print('Already up to date.')
+                return
+        if not self.skipConfirm:
+            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
+                return
+
+        url = '%s%s' % (self._getBaseURL(), fn)
+
+        data = self._download(url)
+
+        if fn.endswith('.tar.gz'):
+            self._extractTar(data)
+        elif fn.endswith('.zip'):
+            self._extractZip(data)
+
+        changeVersion(self.basePath, self.deployment, fn)
+
+        self._print('Success!')
+
+
+    def _getBaseURL(self):
+        return '%s%s/' % (self.settings['baseURL'], self.settings['version'])
+
+
+    def _findLatestFile(self):
+        r = requests.get(self._getBaseURL())
+        soup = BeautifulSoup(r.text)
+
+        for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: x.get('href')):
+            href = link.get('href')
+            if not href.startswith('%s-%s' % (self.settings['filePrefix'],
+                                              self.settings['version'])):
+                print(href)
+                continue
+            if platform.system().lower() in href:
+                return href
+        else:
+            self._print('ERROR: No matching version found for your OS.')
+
+
+
 class GenericDownloader(Downloader):
     def download(self):
         if self.basePath is None:
             self._print('Base path not set in settings.cfg')
             return
 
-        url = self.targetURL
-        data = self._download(self.settings['targetURL'])
+        url = self.settings['URL']
+        data = self._download(url)
 
         if url.endswith('.tar.gz'):
             self._extractTar(data, self.settings['basePath'])
         elif url.endswith('.zip'):
-            self._extractZip(data, self.settings['basePath'])
+            self._extractZip(data, self.settings['basePath'], 1)
+
+        self._print('Success!')

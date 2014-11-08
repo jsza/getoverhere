@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import os
+
 from argparse import ArgumentParser
 from getoverhere.downloader import getDownloader
 
@@ -25,10 +27,15 @@ def main():
                         action='store_true')
     args = parser.parse_args()
 
+    path = os.path.normpath(args.path)
+    full_install = args.full_install
+    skip_confirm = args.skip_confirm
+    force_update = args.force_update
+    verbose = args.verbose
+
     for deployment in args.deployments:
-        downloader = getDownloader(deployment, args.path, args.full_install,
-                                   args.skip_confirm, args.force_update,
-                                   args.verbose)
+        downloader = getDownloader(deployment, path, full_install,
+                                   skip_confirm, force_update, verbose)
         if downloader is None:
             print('[getoverhere] No downloader found for \'%s\'.' % deployment)
         else:

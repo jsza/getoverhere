@@ -1,5 +1,5 @@
+import os
 import sys
-
 
 
 def query_yes_no(question, default="yes"):
@@ -33,3 +33,21 @@ def query_yes_no(question, default="yes"):
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+
+
+
+# http://stackoverflow.com/a/3167684
+def splitPath(path):
+    folders = []
+
+    while 1:
+        path, folder = os.path.split(path)
+        if folder != '':
+            folders.append(folder)
+        else:
+            if path != '':
+                folders.append(path)
+            break
+
+    folders.reverse()
+    return folders

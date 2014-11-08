@@ -1,7 +1,5 @@
-import os
 import json
-
-
+import os
 
 configPath = os.path.join(os.path.expanduser('~'), '.config', 'getoverhere')
 
@@ -10,30 +8,29 @@ if not os.path.exists(configPath):
 
 
 
-def getVersion(deployment):
+def getVersion(basePath, deployment):
     path = os.path.join(configPath, 'versions.cfg')
     if not os.path.exists(path):
-        versions = {
-            'metamod': None,
-            'sourcemod': None,
-            'stripper': None
-        }
+        versions = {}
         with open(path, 'wb') as f:
             json.dump(versions, f)
     else:
         with open(path) as f:
             versions = json.load(f)
-    return versions[deployment]
+    return versions.get(basePath, {}).get(deployment)
 
 
 
-def changeVersion(deployment, value):
+def changeVersion(basePath, deployment, value):
     path = os.path.join(configPath, 'versions.cfg')
 
-    with open(path) as f:
-        versions = json.load(f)
+    if os.path.exists(path):
+        with open(path) as f:
+            versions = json.load(f)
+    else:
+        versions = {}
 
-    versions[deployment] = value
+    versions.setdefault(basePath, {})[deployment] = value
     with open(path, 'w') as f:
         json.dump(versions, f)
 
@@ -84,7 +81,8 @@ def getSettings():
                 'URL': 'http://hg.limetech.org/projects/tf2items/tf2items_release/archive/tip.zip',
                 'basePath': 'addons/sourcemod/',
                 'updateFolders': [],
-                'onlyUpdateExisting': []
+                'onlyUpdateExisting': [],
+                'ignoreFiles': ['.hg_archival.txt']
             }
         }
         with file(path, 'wb') as f:

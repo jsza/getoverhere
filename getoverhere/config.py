@@ -80,7 +80,7 @@ def getSettings():
                 'scheme': 'generic',
                 'URL': 'http://hg.limetech.org/projects/tf2items/tf2items_release/archive/tip.zip',
                 'basePath': 'addons/sourcemod/',
-                'updateFolders': [],
+                'updateFolders': ['extensions', 'gamedata', 'plugins'],
                 'onlyUpdateExisting': [],
                 'ignoreFiles': ['.hg_archival.txt']
             }

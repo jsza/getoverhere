@@ -27,7 +27,7 @@ def main():
                         action='store_true')
     args = parser.parse_args()
 
-    path = os.path.normpath(args.path)
+    path = os.path.abspath(os.path.normpath(args.path))
     full_install = args.full_install
     skip_confirm = args.skip_confirm
     force_update = args.force_update

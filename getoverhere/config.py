@@ -37,57 +37,50 @@ def changeVersion(basePath, deployment, value):
 
 
 def getSettings():
-    path = os.path.join(configPath, 'settings.cfg')
-    if not os.path.exists(path):
-        settings = {
-            'basePath': None,
-            'sourcemod': {
-                'scheme': 'alliedmodders',
-                'baseURL': 'http://www.sourcemod.net/smdrop/',
-                'version': '1.6',
-                'filePrefix': 'sourcemod',
-                'updateFolders': [
-                    'addons/sourcemod/bin/',
-                    'addons/sourcemod/extensions/',
-                    'addons/sourcemod/translations/',
-                    'addons/sourcemod/plugins/'
-                ],
-                'onlyUpdateExisting': [
-                    'addons/sourcemod/plugins'
-                ]
-            },
-            'metamod': {
-                'scheme': 'alliedmodders',
-                'baseURL': 'http://www.metamodsource.net/mmsdrop/',
-                'version': '1.10',
-                'filePrefix': 'mmsource',
-                'updateFolders': [
-                    'addons/metamod/bin'
-                ],
-                'onlyUpdateExisting': []
-            },
-            'stripper': {
-                'scheme': 'alliedmodders',
-                'baseURL': 'http://www.bailopan.net/stripper/snapshots/',
-                'version': '1.2',
-                'filePrefix': 'stripper',
-                'updateFolders': [
-                    'addons/stripper/bin'
-                ],
-                'onlyUpdateExisting': []
-            },
-            'tf2items': {
-                'scheme': 'generic',
-                'URL': 'http://hg.limetech.org/projects/tf2items/tf2items_release/archive/tip.zip',
-                'basePath': 'addons/sourcemod/',
-                'updateFolders': ['extensions', 'gamedata', 'plugins'],
-                'onlyUpdateExisting': [],
-                'ignoreFiles': ['.hg_archival.txt']
-            }
+    return {
+        'sourcemod': {
+            'scheme': 'alliedmodders',
+            'baseURL': 'https://www.sourcemod.net/smdrop/',
+            'version': '1.6',
+            'filePrefix': 'sourcemod',
+            'updateFolders': [
+                'addons/sourcemod/bin/',
+                'addons/sourcemod/extensions/',
+                'addons/sourcemod/translations/',
+                'addons/sourcemod/plugins/'
+            ],
+            'onlyUpdateExisting': [
+                'addons/sourcemod/plugins'
+            ]
+        },
+        'metamod': {
+            'scheme': 'alliedmodders',
+            'baseURL': 'https://www.metamodsource.net/mmsdrop/',
+            'version': '1.10',
+            'filePrefix': 'mmsource',
+            'updateFolders': [
+                'addons/metamod/bin'
+            ],
+            'onlyUpdateExisting': []
+        },
+        'stripper': {
+            'scheme': 'alliedmodders',
+            'baseURL': 'https://www.bailopan.net/stripper/snapshots/',
+            'version': '1.2',
+            'filePrefix': 'stripper',
+            'updateFolders': [
+                'addons/stripper/bin'
+            ],
+            'onlyUpdateExisting': []
+        },
+        'tf2items': {
+            'scheme': 'alliedmodders',
+            'baseURL': 'https://builds.limetech.org/files/',
+            'version': '',
+            'filePrefix': 'tf2items',
+            'updateFolders': [
+                'addons/sourcemod/extensions'
+            ],
+            'onlyUpdateExisting': []
         }
-        with file(path, 'wb') as f:
-            json.dump(settings, f, indent=4)
-    else:
-        with open(path) as f:
-            settings = json.load(f)
-    return settings
+    }

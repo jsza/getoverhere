@@ -97,7 +97,7 @@ class Downloader(object):
         if basePath is not None:
             path = os.path.join(self.basePath, basePath)
         else:
-            path = basePath
+            path = self.basePath
 
         zf.extract(member, path)
 
@@ -113,7 +113,7 @@ class Downloader(object):
             for fn in self.settings['onlyUpdateExisting']:
                 if filename.startswith(fn):
                     if not os.path.exists(
-                        os.path.join(self.settings['basePath'], filename)):
+                        os.path.join(self.basePath, filename)):
                         self._printVerbose('(Skip) %s' % (filename,))
                         return False
 
@@ -184,8 +184,8 @@ class GenericDownloader(Downloader):
         data = self._download(url)
 
         if url.endswith('.tar.gz'):
-            self._extractTar(data, self.settings['basePath'])
+            self._extractTar(data, self.basePath)
         elif url.endswith('.zip'):
-            self._extractZip(data, self.settings['basePath'], 1)
+            self._extractZip(data, self.basePath, 1)
 
         self._print('Success!')

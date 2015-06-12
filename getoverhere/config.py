@@ -39,10 +39,9 @@ def changeVersion(basePath, deployment, value):
 def getSettings():
     return {
         'sourcemod': {
-            'scheme': 'alliedmodders',
-            'baseURL': 'https://www.sourcemod.net/smdrop/',
-            'version': '1.6',
-            'filePrefix': 'sourcemod',
+            'scheme': 'regex',
+            'baseURL': 'https://www.sourcemod.net/smdrop/1.7/',
+            'regex': '^sourcemod-1\.7\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
                 'addons/sourcemod/extensions/',
@@ -54,30 +53,27 @@ def getSettings():
             ]
         },
         'metamod': {
-            'scheme': 'alliedmodders',
-            'baseURL': 'https://www.metamodsource.net/mmsdrop/',
-            'version': '1.10',
-            'filePrefix': 'mmsource',
+            'scheme': 'regex',
+            'baseURL': 'https://www.metamodsource.net/mmsdrop/1.11/',
+            'regex': '^mmsource-1\.11\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/metamod/bin'
             ],
             'onlyUpdateExisting': []
         },
         'stripper': {
-            'scheme': 'alliedmodders',
-            'baseURL': 'https://www.bailopan.net/stripper/snapshots/',
-            'version': '1.2',
-            'filePrefix': 'stripper',
+            'scheme': 'regex',
+            'baseURL': 'https://www.bailopan.net/stripper/snapshots/1.2/',
+            'regex': '^stripper-1\.2\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/stripper/bin'
             ],
             'onlyUpdateExisting': []
         },
         'tf2items': {
-            'scheme': 'alliedmodders',
+            'scheme': 'regex',
             'baseURL': 'https://builds.limetech.org/files/',
-            'version': '',
-            'filePrefix': 'tf2items',
+            'regex': '^tf2items-1\.6\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/extensions'
             ],

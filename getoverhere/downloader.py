@@ -2,6 +2,7 @@ from __future__ import division
 
 import os
 import platform
+import re
 import tarfile
 from StringIO import StringIO
 from zipfile import ZipFile
@@ -10,7 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from getoverhere.config import changeVersion, getSettings, getVersion
-from getoverhere.utils import query_yes_no, splitPath
+from getoverhere.utils import query_yes_no, splitPath, natural_keys
 
 
 def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
@@ -30,6 +31,9 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
     elif scheme == 'generic':
         return GenericDownloader(deployment, ours, basePath, fullInstall,
                                  skipConfirm, forceUpdate, verbose)
+    elif scheme == 'regex':
+        return RegexDownloader(deployment, ours, basePath, fullInstall,
+                               skipConfirm, forceUpdate, verbose)
     else:
         print('[%s] \'%s\' scheme is not supported.' % (deployment, scheme))
         return None
@@ -46,6 +50,10 @@ class Downloader(object):
         self.skipConfirm = skipConfirm
         self.forceUpdate = forceUpdate
         self.verbose = verbose
+
+
+    def download(self):
+        raise NotImplementedError
 
 
     def _download(self, url):
@@ -165,7 +173,6 @@ class AlliedModdersDownloader(Downloader):
             href = link.get('href')
             if not href.startswith('%s-%s' % (self.settings['filePrefix'],
                                               self.settings['version'])):
-                print(href)
                 continue
             if platform.system().lower() in href:
                 return href
@@ -189,3 +196,51 @@ class GenericDownloader(Downloader):
             self._extractZip(data, self.basePath, 1)
 
         self._print('Success!')
+
+
+
+class RegexDownloader(Downloader):
+    def download(self):
+        if self.basePath is None:
+            self._print('Base path not set in settings.cfg')
+            return
+
+        fn = self._findLatestFile()
+        if fn is None:
+            return
+
+        if not self.forceUpdate:
+            if fn == getVersion(self.basePath, self.deployment):
+                self._print('Already up to date.')
+                return
+        if not self.skipConfirm:
+            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
+                return
+
+        url = '%s%s' % (self.settings['baseURL'], fn)
+
+        data = self._download(url)
+
+        if fn.endswith('.tar.gz'):
+            self._extractTar(data)
+        elif fn.endswith('.zip'):
+            self._extractZip(data)
+
+        changeVersion(self.basePath, self.deployment, fn)
+
+        self._print('Success!')
+
+
+    def _findLatestFile(self):
+        r = requests.get(self.settings['baseURL'])
+        soup = BeautifulSoup(r.text)
+
+        for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: natural_keys(x.get('href'))):
+            href = link.get('href')
+            if not re.match(self.settings['regex'], href):
+                continue
+            if platform.system().lower() in href:
+                return href
+        else:
+            print(self.settings['regex'])
+            self._print('ERROR: No matching version found for your OS.')

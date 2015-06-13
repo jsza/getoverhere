@@ -242,5 +242,4 @@ class RegexDownloader(Downloader):
             if platform.system().lower() in href:
                 return href
         else:
-            print(self.settings['regex'])
             self._print('ERROR: No matching version found for your OS.')

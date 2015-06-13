@@ -41,7 +41,7 @@ def getSettings():
         'sourcemod': {
             'scheme': 'regex',
             'baseURL': 'https://www.sourcemod.net/smdrop/1.7/',
-            'regex': '^sourcemod-1\.7\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^sourcemod-1\.7\.[0-9]*-(git|hg)[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
                 'addons/sourcemod/extensions/',
@@ -55,7 +55,7 @@ def getSettings():
         'metamod': {
             'scheme': 'regex',
             'baseURL': 'https://www.metamodsource.net/mmsdrop/1.11/',
-            'regex': '^mmsource-1\.11\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^mmsource-1\.11\.[0-9]*-(git|hg)[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/metamod/bin'
             ],
@@ -64,7 +64,7 @@ def getSettings():
         'stripper': {
             'scheme': 'regex',
             'baseURL': 'https://www.bailopan.net/stripper/snapshots/1.2/',
-            'regex': '^stripper-1\.2\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^stripper-1\.2\.[0-9]*-(git|hg)[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/stripper/bin'
             ],
@@ -73,7 +73,7 @@ def getSettings():
         'tf2items': {
             'scheme': 'regex',
             'baseURL': 'https://builds.limetech.org/files/',
-            'regex': '^tf2items-1\.6\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^tf2items-1\.6\.[0-9]*-(git|hg)[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/extensions'
             ],

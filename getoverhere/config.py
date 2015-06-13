@@ -78,5 +78,23 @@ def getSettings():
                 'addons/sourcemod/extensions'
             ],
             'onlyUpdateExisting': []
+        },
+        'accelerator': {
+            'scheme': 'regex',
+            'baseURL': 'https://builds.limetech.org/files/',
+            'regex': '^accelerator-2\.0\.[0-9]*-(git|hg)[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'updateFolders': [
+                'addons/sourcemod/extensions'
+            ],
+            'onlyUpdateExisting': []
+        },
+        'steamtools': {
+            'scheme': 'regex',
+            'baseURL': 'https://builds.limetech.org/files/',
+            'regex': '^steamtools-0\.9\.[0-9]*-(git|hg).*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'updateFolders': [
+                'addons/sourcemod/extensions'
+            ],
+            'onlyUpdateExisting': []
         }
     }

@@ -14,8 +14,8 @@ from getoverhere.config import changeVersion, getSettings, getVersion
 from getoverhere.utils import query_yes_no, splitPath, natural_keys
 
 
-def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
-                  verbose):
+def getDownloader(deployment, basePath, fullInstall, allowFullInstall,
+                  skipConfirm, forceUpdate, verbose):
     settings = getSettings()
 
     try:
@@ -27,13 +27,16 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
     scheme = ours['scheme']
     if scheme == 'alliedmodders':
         return AlliedModdersDownloader(deployment, ours, basePath, fullInstall,
-                                       skipConfirm, forceUpdate, verbose)
+                                       allowFullInstall, skipConfirm,
+                                       forceUpdate, verbose)
     elif scheme == 'generic':
         return GenericDownloader(deployment, ours, basePath, fullInstall,
-                                 skipConfirm, forceUpdate, verbose)
+                                 allowFullInstall, skipConfirm, forceUpdate,
+                                 verbose)
     elif scheme == 'regex':
         return RegexDownloader(deployment, ours, basePath, fullInstall,
-                               skipConfirm, forceUpdate, verbose)
+                               allowFullInstall, skipConfirm, forceUpdate,
+                               verbose)
     else:
         print('[%s] \'%s\' scheme is not supported.' % (deployment, scheme))
         return None
@@ -42,11 +45,12 @@ def getDownloader(deployment, basePath, fullInstall, skipConfirm, forceUpdate,
 
 class Downloader(object):
     def __init__(self, deployment, settings, basePath, fullInstall,
-                 skipConfirm, forceUpdate, verbose):
+                 allowFullInstall, skipConfirm, forceUpdate, verbose):
         self.deployment = deployment
         self.basePath = basePath
         self.settings = settings
         self.fullInstall = fullInstall
+        self.allowFullInstall = allowFullInstall
         self.skipConfirm = skipConfirm
         self.forceUpdate = forceUpdate
         self.verbose = verbose
@@ -110,8 +114,14 @@ class Downloader(object):
         zf.extract(member, path)
 
 
+    def _shouldFullInstall(self):
+        if self.fullInstall:
+            return True
+        return False
+
+
     def _checkUpdatable(self, filename):
-        if not self.fullInstall:
+        if not self._shouldFullInstall():
             for fn in self.settings['updateFolders']:
                 if filename.startswith(fn):
                     break
@@ -180,6 +190,17 @@ class AlliedModdersDownloader(Downloader):
             self._print('ERROR: No matching version found for your OS.')
 
 
+    def _shouldFullInstall(self):
+        if self.fullInstall:
+            return True
+
+        if self.allowFullInstall:
+            if getVersion(self.basePath, self.deployment) is None:
+                return True
+
+        return False
+
+
 
 class GenericDownloader(Downloader):
     def download(self):
@@ -243,3 +264,14 @@ class RegexDownloader(Downloader):
                 return href
         else:
             self._print('ERROR: No matching version found for your OS.')
+
+
+    def _shouldFullInstall(self):
+        if self.fullInstall:
+            return True
+
+        if self.allowFullInstall:
+            if getVersion(self.basePath, self.deployment) is None:
+                return True
+
+        return False

@@ -1,15 +1,10 @@
 import json
 import os
 
-configPath = os.path.join(os.path.expanduser('~'), '.config', 'getoverhere')
-
-if not os.path.exists(configPath):
-    os.makedirs(configPath)
-
 
 
 def getVersion(basePath, deployment):
-    path = os.path.join(configPath, 'versions.cfg')
+    path = os.path.join(basePath, '.goh_versions')
     if not os.path.exists(path):
         versions = {}
         with open(path, 'wb') as f:
@@ -17,12 +12,12 @@ def getVersion(basePath, deployment):
     else:
         with open(path) as f:
             versions = json.load(f)
-    return versions.get(basePath, {}).get(deployment)
+    return versions.get(deployment)
 
 
 
 def changeVersion(basePath, deployment, value):
-    path = os.path.join(configPath, 'versions.cfg')
+    path = os.path.join(basePath, '.goh_versions')
 
     if os.path.exists(path):
         with open(path) as f:
@@ -30,7 +25,7 @@ def changeVersion(basePath, deployment, value):
     else:
         versions = {}
 
-    versions.setdefault(basePath, {})[deployment] = value
+    versions[deployment] = value
     with open(path, 'w') as f:
         json.dump(versions, f)
 

@@ -22,12 +22,16 @@ def main():
                         help='Force install if already up-to-date. '
                              'This should not be needed unless something went horribly wrong.',
                         action='store_true')
+    parser.add_argument('-afi', '--allow-full-install',
+                        help='If no previous installation could be found for this path, perform a full install.',
+                        action='store_true')
     parser.add_argument('-v', '--verbose',
                         help='Output all status messages.',
                         action='store_true')
     args = parser.parse_args()
 
     path = os.path.abspath(os.path.normpath(args.path))
+    allow_full_install = args.allow_full_install
     full_install = args.full_install
     skip_confirm = args.skip_confirm
     force_update = args.force_update
@@ -35,7 +39,8 @@ def main():
 
     for deployment in args.deployments:
         downloader = getDownloader(deployment, path, full_install,
-                                   skip_confirm, force_update, verbose)
+                                   allow_full_install, skip_confirm,
+                                   force_update, verbose)
         if downloader is None:
             print('[getoverhere] No downloader found for \'%s\'.' % deployment)
         else:

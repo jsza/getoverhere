@@ -7,8 +7,6 @@ def getVersion(basePath, deployment):
     path = os.path.join(basePath, '.goh_versions')
     if not os.path.exists(path):
         versions = {}
-        with open(path, 'wb') as f:
-            json.dump(versions, f)
     else:
         with open(path) as f:
             versions = json.load(f)

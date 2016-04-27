@@ -177,7 +177,7 @@ class AlliedModdersDownloader(Downloader):
 
     def _findLatestFile(self):
         r = requests.get(self._getBaseURL())
-        soup = BeautifulSoup(r.text)
+        soup = BeautifulSoup(r.text, 'html5lib')
 
         for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: x.get('href')):
             href = link.get('href')
@@ -254,7 +254,7 @@ class RegexDownloader(Downloader):
 
     def _findLatestFile(self):
         r = requests.get(self.settings['baseURL'])
-        soup = BeautifulSoup(r.text)
+        soup = BeautifulSoup(r.text, 'html5lib')
 
         for link in sorted(soup.find_all('a'), reverse=True, key=lambda x: natural_keys(x.get('href'))):
             href = link.get('href')

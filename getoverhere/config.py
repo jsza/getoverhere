@@ -77,7 +77,8 @@ def getSettings():
             'baseURL': 'https://builds.limetech.org/files/',
             'regex': '^accelerator-2\.2\.[0-9]*-git[0-9]*-[a-zA-Z0-9_]{7}-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
-                'addons/sourcemod/extensions'
+                'addons/sourcemod/extensions',
+                'addons/sourcemod/gamedata'
             ],
             'onlyUpdateExisting': []
         },

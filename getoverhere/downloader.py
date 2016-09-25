@@ -13,6 +13,9 @@ from bs4 import BeautifulSoup
 from getoverhere.config import changeVersion, getSettings, getVersion
 from getoverhere.utils import query_yes_no, splitPath, natural_keys
 
+from urlparse import urljoin
+
+
 
 def getDownloader(deployment, basePath, fullInstall, allowFullInstall,
                   skipConfirm, forceUpdate, verbose):
@@ -226,28 +229,26 @@ class RegexDownloader(Downloader):
             self._print('Base path not set in settings.cfg')
             return
 
-        fn = self._findLatestFile()
-        if fn is None:
+        url = self._findLatestFile()
+        if url is None:
             return
 
         if not self.forceUpdate:
-            if fn == getVersion(self.basePath, self.deployment):
+            if url == getVersion(self.basePath, self.deployment):
                 self._print('Already up to date.')
                 return
         if not self.skipConfirm:
-            if not query_yes_no('[%s] Download %s?' % (self.deployment, fn,)):
+            if not query_yes_no('[%s] Download %s?' % (self.deployment, url,)):
                 return
-
-        url = '%s%s' % (self.settings['baseURL'], fn)
 
         data = self._download(url)
 
-        if fn.endswith('.tar.gz'):
+        if url.endswith('.tar.gz'):
             self._extractTar(data)
-        elif fn.endswith('.zip'):
+        elif url.endswith('.zip'):
             self._extractZip(data)
 
-        changeVersion(self.basePath, self.deployment, fn)
+        changeVersion(self.basePath, self.deployment, url)
 
         self._print('Success!')
 
@@ -261,7 +262,10 @@ class RegexDownloader(Downloader):
             if not re.match(self.settings['regex'], href):
                 continue
             if platform.system().lower() in href:
-                return href
+                if any(map(href.startswith, ['https://', 'http://'])):
+                    return href
+                else:
+                    return urljoin(r.url, href)
         else:
             self._print('ERROR: No matching version found for your OS.')
 

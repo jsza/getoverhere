@@ -214,10 +214,15 @@ class GenericDownloader(Downloader):
         url = self.settings['URL']
         data = self._download(url)
 
+        appendPath = self.settings.get('appendPath')
+        basePath = self.basePath
+        if appendPath:
+            basePath = os.path.abspath(os.path.join(basePath, appendPath))
+
         if url.endswith('.tar.gz'):
-            self._extractTar(data, self.basePath)
+            self._extractTar(data, appendPath)
         elif url.endswith('.zip'):
-            self._extractZip(data, self.basePath, 1)
+            self._extractZip(data, appendPath)
 
         self._print('Success!')
 

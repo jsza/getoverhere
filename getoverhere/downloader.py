@@ -224,6 +224,8 @@ class GenericDownloader(Downloader):
         elif url.endswith('.zip'):
             self._extractZip(data, appendPath)
 
+        changeVersion(self.basePath, self.deployment, url)
+
         self._print('Success!')
 
 

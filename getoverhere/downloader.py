@@ -212,6 +212,15 @@ class GenericDownloader(Downloader):
             return
 
         url = self.settings['URL']
+
+        if not self.forceUpdate:
+            if url == getVersion(self.basePath, self.deployment):
+                self._print('Already up to date.')
+                return
+        if not self.skipConfirm:
+            if not query_yes_no('[%s] Download %s?' % (self.deployment, url,)):
+                return
+
         data = self._download(url)
 
         appendPath = self.settings.get('appendPath')

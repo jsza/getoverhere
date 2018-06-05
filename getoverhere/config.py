@@ -33,9 +33,9 @@ def getSettings():
     return {
         'sourcemod': {
             'scheme': 'regex',
-            'baseURL': 'https://www.sourcemod.net/smdrop/1.8/',
+            'baseURL': 'https://www.sourcemod.net/smdrop/1.9/',
             # 'regex': '^sourcemod-1\.8\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
-            'regex': '^sourcemod-1\.8\.0-git6036-(windows|linux|max)\.(zip|tar\.gz)$',
+            'regex': '^sourcemod-1\.9\.0-git6235-(windows|linux|max)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
                 'addons/sourcemod/extensions/',
@@ -102,5 +102,16 @@ def getSettings():
             ],
             'onlyUpdateExisting': [],
             'appendPath': 'addons'
+        },
+        'dhooks': {
+            'scheme': 'regex',
+            'baseURL': 'http://users.alliedmods.net/~drifter/builds/dhooks/2.2/',
+            'regex': '^dhooks-2.2.0-hg126-(windows|linux|mac)\.tar.gz$',
+            'updateFolders': [
+                'addons/sourcemod/extensions',
+                'addons/sourcemod/gamedata',
+                'addons/sourcemod/scripting'
+            ],
+            'onlyUpdateExisting': []
         }
     }

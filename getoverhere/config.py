@@ -34,8 +34,7 @@ def getSettings():
         'sourcemod': {
             'scheme': 'regex',
             'baseURL': 'https://www.sourcemod.net/smdrop/1.9/',
-            # 'regex': '^sourcemod-1\.8\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
-            'regex': '^sourcemod-1\.9\.0-git6235-(windows|linux|max)\.(zip|tar\.gz)$',
+            'regex': '^sourcemod-1\.9\.0-git6235-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
                 'addons/sourcemod/extensions/',

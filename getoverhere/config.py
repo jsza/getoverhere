@@ -33,7 +33,7 @@ def getSettings():
     return {
         'sourcemod': {
             'scheme': 'regex',
-            'baseURL': 'https://www.sourcemod.net/smdrop/1.9/',
+            'baseURL': 'https://www.sourcemod.net/smdrop/1.10/',
             'regex': '^sourcemod-1\.10\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
@@ -47,7 +47,7 @@ def getSettings():
         },
         'metamod': {
             'scheme': 'regex',
-            'baseURL': 'https://www.metamodsource.net/mmsdrop/1.11/',
+            'baseURL': 'https://www.metamodsource.net/mmsdrop/1.10/',
             'regex': '^mmsource-1\.10\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/metamod/bin'

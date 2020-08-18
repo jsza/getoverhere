@@ -34,7 +34,7 @@ def getSettings():
         'sourcemod': {
             'scheme': 'regex',
             'baseURL': 'https://www.sourcemod.net/smdrop/1.9/',
-            'regex': '^sourcemod-1\.9\.0-git6235-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^sourcemod-1\.10\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/bin/',
                 'addons/sourcemod/extensions/',
@@ -48,7 +48,7 @@ def getSettings():
         'metamod': {
             'scheme': 'regex',
             'baseURL': 'https://www.metamodsource.net/mmsdrop/1.11/',
-            'regex': '^mmsource-1\.11\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^mmsource-1\.10\.[0-9]*-git[0-9]*-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/metamod/bin'
             ],
@@ -75,7 +75,7 @@ def getSettings():
         'accelerator': {
             'scheme': 'regex',
             'baseURL': 'https://builds.limetech.io/?p=accelerator',
-            'regex': '^.*accelerator-2\.3\.[0-9]*-git[0-9]*-[a-zA-Z0-9_]{7}-(windows|linux|mac)\.(zip|tar\.gz)$',
+            'regex': '^.*accelerator-2\.5\.[0-9]*-git[0-9]*-[a-zA-Z0-9_]{7}-(windows|linux|mac)\.(zip|tar\.gz)$',
             'updateFolders': [
                 'addons/sourcemod/extensions',
                 'addons/sourcemod/gamedata'

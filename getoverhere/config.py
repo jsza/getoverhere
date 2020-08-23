@@ -93,7 +93,7 @@ def getSettings():
         },
         'collisionhook': {
             'scheme': 'generic',
-            'URL': 'https://bitbucket.org/VoiDeD/collisionhook/downloads/collisionhook-0.2.zip',
+            'URL': 'https://bitbucket.org/jsza/tempus-sourcemod-plugins/downloads/collisionhook-0.2.zip',
             'updateFolders': [
                 'sourcemod/extensions',
                 'sourcemod/gamedata',

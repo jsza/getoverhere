@@ -103,9 +103,8 @@ def getSettings():
             'appendPath': 'addons'
         },
         'dhooks': {
-            'scheme': 'regex',
-            'baseURL': 'http://users.alliedmods.net/~drifter/builds/dhooks/2.2/',
-            'regex': '^dhooks-2.2.0-hg126-(windows|linux|mac)\.tar.gz$',
+            'scheme': 'generic',
+            'URL': 'https://bitbucket.org/jsza/tempus-sourcemod-plugins/downloads/dhooks-2.2.0-detours14a-sm110.zip',
             'updateFolders': [
                 'addons/sourcemod/extensions',
                 'addons/sourcemod/gamedata',
